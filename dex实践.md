@@ -1,5 +1,5 @@
 ## 实验目的
-熟练掌握ERC20标准，熟悉基于xy=k的AMM实现原理，能实现增加/溢出流动性，实现多个token的swap
+熟练掌握ERC20标准，熟悉基于xy=k的AMM实现原理，能实现增加/移出流动性，实现多个token的swap
 
 ## 实验环境
 vscode+hardhat
