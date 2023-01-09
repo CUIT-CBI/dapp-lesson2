@@ -9,6 +9,8 @@ const config: HardhatUserConfig = {
       url: "https://eth-rinkeby.alchemyapi.io/v2/123abc123abc123abc123abc123abcde",
     },
     localhost: {
+      gas: 2100000,
+      gasPrice: 8000000000,
       url: "http://127.0.0.1:8545/",
       accounts: ["0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e", "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0"]
     },
