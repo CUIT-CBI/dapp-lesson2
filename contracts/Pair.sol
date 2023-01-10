@@ -42,8 +42,9 @@ contract Pair {
     FT public token1;
     // token2合约地址
     FT public token2;
+    // 流动性
     uint256 public liquidity;
-    // 总流动性 (x * y)
+    // 总流动性 (x * y = k)
     uint256 public totalLiquidity;
     // token1总量
     uint256 public token1Supply;
@@ -77,6 +78,7 @@ contract Pair {
 
     // 第一次添加流动性,确定后续的流动性相关属性
     // 因为第一次添加,无法确定具体流动性属性,故没有计算liquidity、totalLiquidity等
+    // 默认token1的数量比token2多
     function init(uint256 token1Amount, uint256 token2Amount) external payable onlyOwner() {
         require(flag == 0);
         // 更新flag
