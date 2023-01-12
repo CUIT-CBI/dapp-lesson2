@@ -7,9 +7,9 @@ import "./libraries/SafeMath.sol";
 contract UniswapERC20 is IUniswapERC20{
     using SafeMath for uint256;
     //token名称
-    string override public constant name = "Uniswap V2";
+    string override public constant name = "Uniswap";
     //token缩写
-    string override public constant symbol = "UNI-V2";
+    string override public constant symbol = "UNI";
     //token精度
     uint8 override public constant decimals = 18;
     //总量
