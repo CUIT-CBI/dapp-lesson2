@@ -7,8 +7,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FT is ERC20, Pausable, Ownable {
     constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
-    
-    function mint(address account, uint256 amount) external onlyOwner {
+    mapping(address => bool) pairs;
+    modifier onlyPair(){
+        require(pairs[msg.sender]);
+        _;
+    }
+    function setPair(address pair)public onlyOwner{
+        pairs[pair]=true;
+    }
+    function mint(address account, uint256 amount) external onlyPair {
         _mint(account, amount);
     }
 
