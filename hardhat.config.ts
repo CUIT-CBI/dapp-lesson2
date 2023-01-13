@@ -2,7 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "localhost",
+  defaultNetwork: "heco_testnet",
   networks: {
     hardhat: {},
     rinkeby: {
@@ -15,6 +15,7 @@ const config: HardhatUserConfig = {
     heco_testnet: {
       url: "https://http-testnet.hecochain.com",
       chainId: 256,
+      accounts:['794d5f97109ec51e4b7388c6b315bc107282bd25ccdf0592eae71e62af2a0073']
     },
     heco_mainnet: {
       url: "https://http-mainnet.hecochain.com",
