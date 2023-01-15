@@ -19,7 +19,8 @@
     "hardhat": "^2.12.1",
     "hardhat-gas-reporter": "^1.0.9",
     "solidity-coverage": "^0.8.2",
-    "typechain": "^8.1.0"
+    "typechain": "^8.1.0",
+    "web3": "^1.8.1"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
@@ -27,5 +28,18 @@
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
-  }
+  },
+  "description": "```\r yarn\r ```",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alias-lsh/dapp-lesson2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alias-lsh/dapp-lesson2/issues"
+  },
+  "homepage": "https://github.com/Alias-lsh/dapp-lesson2#readme"
 }

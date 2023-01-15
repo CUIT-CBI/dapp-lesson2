@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 ### 3. 实现手续费功能，千分之三手续费        10分
 ### 4. 实现滑点功能                         15分
 ### 5. 实现部署脚本                         15分
+## 加分项
+### 1. 实现上述所有基础功能，并且实现自己的前端对接这个合约
 */
 contract UniswapLSH is FT {
     // 新建两个代币
@@ -65,6 +67,10 @@ contract UniswapLSH is FT {
         balance1 = balance1 - _amount1;
         balance2 = balance2 - _amount2;
 
+    }
+
+    function getBothBalance() external view returns (uint, uint) {
+        return (balance1, balance2);
     }
 
 
