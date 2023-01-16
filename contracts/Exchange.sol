@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "./FT.sol";
+import "./Factory.sol";
 
 //实验目的
 // 熟练掌握ERC20标准，熟悉基于xy=k的AMM实现原理，
@@ -9,6 +10,7 @@ import "./FT.sol";
 
 // 本实验主要需要理解流动性、滑点、手续费等概念，
 // 以及uniswap的原理和相关计算
+// 主要思想是 reserve0 * reserve1 乘积不变
 
 contract Exchange is FT {
     //新建两种代币token0和token1
@@ -22,11 +24,6 @@ contract Exchange is FT {
 
     uint256 amount0;
     uint256 amount1;
-
-    constructor(address _token0, address _token1) FT("ZC","ZC"){
-        token0 = _token0;
-        token1 = _token1;
-    }
 
     //以下两个数学函数是为了方便后面计算
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -46,8 +43,14 @@ contract Exchange is FT {
         }
     }
 
-    //创建流动池
-    function createPool(uint256 _amount0, uint256 _amount1) external {
+    constructor(address _token0, address _token1) FT("ZC","ZC"){
+        require(_token0 != _token1 && _token0 != address(0) && _token1 != address(0), "Incorrect address");
+        token0 = _token0;
+        token1 = _token1;
+    }
+
+    //创建并初始化流动池
+    function createAndInitializePool(uint256 _amount0, uint256 _amount1) external payable {
         ERC20(token0).transferFrom(msg.sender, address(this), _amount0);
         ERC20(token1).transferFrom(msg.sender, address(this), _amount1);
         //更新两种代币余额
