@@ -16,11 +16,10 @@ async function main() {
   await exchange.deployed();
   console.log(`Exchange deployed to ${exchange.address}`);
 
-  const Factory = await ethers.getContractExchange("Pair");
-  const factory = await Factory.deploy(token0.address, token1.address);
-  await factory.deployed();
-  console.log(`Factory deployed to ${factory.address}`);
-
+  // const Factory = await ethers.getContractExchange("Pair");
+  // const factory = await Factory.deploy(token0.address, token1.address);
+  // await factory.deployed();
+  // console.log(`Factory deployed to ${factory.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
