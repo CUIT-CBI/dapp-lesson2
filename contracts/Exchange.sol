@@ -30,6 +30,11 @@ import "./Factory.sol";
 // 手续费会直接添加到流动池中，作为流动性提供者（
 // 即向池子中存币的用户）的收益
 
+//流动池：
+// 把面对面直接交易改为面向流动池交易
+
+
+
 contract Exchange is FT {
     //新建两种代币token0和token1
     address public token0;
