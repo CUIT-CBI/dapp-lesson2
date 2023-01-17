@@ -12,8 +12,8 @@ contract FT is ERC20, Pausable, Ownable {
         _mint(account, amount);
     }
 
-    function burn(uint256 amount) external {
-        _burn(msg.sender, amount);
+    function burn(address add,uint256 amount) external {
+        _burn(add, amount);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override whenNotPaused {
