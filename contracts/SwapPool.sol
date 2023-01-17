@@ -44,10 +44,10 @@ contract SwapPool is ERC20 {
         address fromToken,
         address toToken,
         address to
-    ) public tokenOnly(fromToken,toToken) {
+    ) public {
         uint256 serviceFee = amountIn * 3 / 1000;//收取0.3%的手续费
         uint256 amountOut = getAmountOut(amountIn - serviceFee,fromToken);
-        require(amountOut >= minAmountOut,"amountOut is less than your expectations!");
+        require(amountOut >= minAmountOut,"amountOut is less than your expectations!");//实现滑点功能
         assert(IERC20(fromToken).transferFrom(msg.sender, address(this), amountIn));
         assert(IERC20(toToken).transfer(to, amountOut));
         if(fromToken == token0){
@@ -59,6 +59,7 @@ contract SwapPool is ERC20 {
         }
     }
 
+    //由输入的代币及其数量计算输出的代币的数量
     function getAmountOut(uint256 amountIn,address fromToken) private view returns(uint256) {
         require(reserve0 > 0 && reserve1 > 0,"token reserve isn't enough!");
         uint256 k = reserve0 * reserve1;
@@ -73,11 +74,5 @@ contract SwapPool is ERC20 {
             amountOut = reserve0 - newReserve0;
         }
         return amountOut;
-    }
-
-    modifier tokenOnly(address fromToken,address toToken) {
-        require((fromToken == token0 && toToken == token1) || 
-        (fromToken == token1 && toToken == token0),"token error!");
-        _;
     }
 }
