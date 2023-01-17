@@ -2,21 +2,16 @@ import '@nomiclabs/hardhat-ethers';
 import { ethers } from "hardhat";
 
 async function main() {
-  const FT = await ethers.getContractFactory("FT");
-  const ft = await FT.deploy("Wuchang", "WC");
 
-  await ft.deployed();
-  console.log(`FT deployed to ${ft.address}`);
+  const Token = await ethers.getContractFactory("WuChang");
+  const token = await Token.deploy();
 
-  const Token = await ethers.getContractFactory("token");
-  const DeployToken = await Token.deploy();
+  await token.deployed();
+  console.log(`token deployed to ${token.address}`);
 
-  await DeployToken.deployed();
-  console.log(`token deployed to ${DeployToken.address}`);
+  const TokenExchange = await ethers.getContractFactory("TokenExchange");
+  const exchange = await TokenExchange.deploy(token.address);
 
-  const Exchange = await ethers.getContractFactory("TokenExchange");
-  const TokenExchange = await Exchange.deploy(DeployToken.address);
-
-  await TokenExchange.deployed();
-  console.log(`TokenExchange deployed to ${TokenExchange.address}`);
+  await exchange.deployed();
+  console.log(`exchange deployed to ${exchange.address}`);
   }
