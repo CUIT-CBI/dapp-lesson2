@@ -10,7 +10,7 @@ contract TokenSwap is LPToken {
     address public immutable tokenB;
 
     uint private reserveA;
-    uint private reverseB;
+    uint private reserveB;
 
     constructor(address _tokenA, address _tokenB) {
         tokenA = _tokenA;
@@ -19,7 +19,7 @@ contract TokenSwap is LPToken {
 
     function _getReserve() view internal returns (uint _reserveA, uint _reserveB) {
         _reserveA = reserveA;
-        _reserveB = reverseB;
+        _reserveB = reserveB;
     }
 
     // 初始化，建池子
@@ -123,6 +123,6 @@ contract TokenSwap is LPToken {
     // 更新 reserve
     function _update() internal {
         reserveA = IERC20(tokenA).balanceOf(address(this));
-        reverseB = IERC20(tokenB).balanceOf(address(this));
+        reserveB = IERC20(tokenB).balanceOf(address(this));
     }
 }
