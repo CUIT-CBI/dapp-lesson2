@@ -128,12 +128,13 @@ contract pool{
     }
      
     //滑点功能
-    //实际能兑换的token数和预计兑换的token数的比值为滑点，设置滑点范围6%
+    //实际能兑换的token数和预计兑换的token数的差值与预计兑换的比值为滑点
+    //设置滑点范围6%, 即(plan-real)/plan = 6%
     function slipPoint(address _token, uint256 _number)public view returns(bool){
         require(_token == token1 || _token == token2, 'without this token');
         require(_number != 0, 'ERROR input');
-        uint256 _rate = amount1 * 1000/ amount2; 
-        uint rate;
+        uint256 _rate = amount1 * 1000/ amount2;  // plan
+        uint rate;  //real
         uint256 ride = amount1 *amount2;
         if (_token == token1 ){
             uint256 _amount2_ = amount2 -  ride / amount1;
@@ -143,7 +144,7 @@ contract pool{
             rate = _amount1_ * 1000/ _number;
         }
 
-        if ((rate * 1000 / _rate)  >= 60){
+        if (((_rate - rate) * 1000 / _rate)  >= 60){
             return false;
         }else{
             return true;
