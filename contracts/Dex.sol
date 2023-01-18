@@ -59,7 +59,7 @@ contract Dex is LP {
     }
 
     function SwapTokenA(uint amountAIn, uint slippage) external {
-        uint amountBOut = (reserveB - (reserveA * reserveB) / (reserveA + amountAIn) * 997 / 1000);
+        uint amountBOut = (reserveB - reserveA * reserveB / (reserveA + amountAIn)) * 997 / 1000;
         uint expectAmountBOut = reserveB * amountAIn / reserveA;
         uint slip = (expectAmountBOut - amountBOut) * 1000 / expectAmountBOut;
         require(slip < slippage, "slippage error");
@@ -69,7 +69,7 @@ contract Dex is LP {
     }
 
     function SwapTokenB(uint amountBIn, uint slippage) external {
-        uint amountAOut = (reserveA - (reserveA * reserveB) / (reserveB + amountBIn) * 997 / 1000);
+        uint amountAOut = (reserveA - reserveA * reserveB / (reserveB + amountBIn)) * 997 / 1000;
         uint expectAmountAOut = reserveA * amountBIn / reserveB;
         uint slip = (expectAmountAOut - amountAOut) * 1000 / expectAmountAOut;
         require(slip < slippage, "slippage error");
