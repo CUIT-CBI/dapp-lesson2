@@ -10,3 +10,5 @@ yarn.lock
 #Hardhat files
 cache
 artifacts
+
+.idea
