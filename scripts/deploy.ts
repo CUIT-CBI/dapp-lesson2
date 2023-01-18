@@ -2,11 +2,11 @@ import '@nomiclabs/hardhat-ethers';
 import { ethers } from "hardhat";
 
 async function main() {
-  const FT = await ethers.getContractFactory("FT");
-  const ft = await FT.deploy("CBI", "CUIT");
+  const Dex = await ethers.getContractFactory("Dex");
+  const dex = await FT.deploy();
 
-  await ft.deployed();
-  console.log(`FT deployed to ${ft.address}`);
+  await dex.deployed();
+  console.log(`Dex contract deployed to ${dex.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
