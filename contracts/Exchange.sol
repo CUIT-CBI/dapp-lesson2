@@ -5,102 +5,139 @@ pragma solidity ^0.8.9;
  import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract Exchange is ERC20{
-  address public tokenAddress;
+contract  Exchange is ERC20{
+  address  public token1Address;
+  address  public token2Address;
 
-    constructor(address _tokenAddress)ERC20("dyx" , "dfy"){
-      require(_tokenAddress != address(0),"invalid address");
-      tokenAddress=_tokenAddress;
+  // uint256  public token1Reserve;
+  // uint256  public token2Reserve;
+    constructor(address _token1Address,address _token2Address)ERC20("dyx" , "dfy"){
+      require(_token1Address != address(0),"invalid address");
+      require(_token1Address != address(0),"invalid address");
+      token1Address=_token1Address; 
+      token2Address=_token2Address; 
     }
-    //流动性的增加与移除
-    //增加流动性
-  function addLiquidity(uint256 _amount)public payable returns(uint256){
+    //流动性的增加与移除 
+    //增加流动性 
+  function addLiquidity(uint256 _amount1,uint256 _amount2)public  returns(uint256){
     //当前池子中不具有流动性
-    if (getReserve()==0) {
+    uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve, token2Reserve) = getReserve();//获取当前池子中的token数量
+    uint256 liquidity;
+    if (token1Reserve==0&&token2Reserve==0) {
       //将提供流动性的用户的钱转入合约中
-      IERC20 token= IERC20(tokenAddress);
-      token.transferFrom(msg.sender, address(this), _amount);
-      //流动性计算
-       uint256 liquidity = address(this).balance;
+      IERC20 token1= IERC20(token1Address);
+      IERC20 token2= IERC20(token2Address);
+      token1.transferFrom(msg.sender, address(this), _amount1);
+      token2.transferFrom(msg.sender, address(this), _amount2);
        //奖励
+       liquidity = 10**5;
       _mint(msg.sender, liquidity);
       return liquidity;
     }else{
-      //当前池子中的
-      uint256 ethReserve = address(this).balance - msg.value;//计算value进入之前池子中的eth数量
-      uint256 tokenReserve = getReserve();//获取当前池子中的token数量
-      uint256 tokenAmount  = (msg.value * tokenReserve)/ethReserve;
-      require(tokenAmount<=_amount,"invalid amount");
-      IERC20 token = IERC20(tokenAddress);
-      token.transferFrom(msg.sender, address(this), tokenAmount);
-      //流动性计算
-      uint256 liquidity = (totalSupply() * msg.value)/ethReserve;
-      _mint(msg.sender, liquidity);
-      return liquidity;
-    } 
+      uint256 mintokenReserve = min(token1Reserve+_amount1, token2Reserve+_amount2);
+      if (mintokenReserve==uint256(1)){
+          uint256 token1Amount = _amount2*token1Reserve/token2Reserve;
+          IERC20(token1Address).transferFrom(msg.sender, address(this), token1Amount);
+          IERC20(token2Address).transferFrom(msg.sender, address(this), _amount2);
+          liquidity=totalSupply()*_amount2/token2Reserve;
+          _mint(msg.sender,liquidity);
+      }else{
+        uint256 token2Amount = _amount1*token2Reserve/token1Reserve;
+        IERC20(token2Address).transferFrom(msg.sender, address(this), token2Amount);
+        IERC20(token1Address).transferFrom(msg.sender, address(this), _amount1);
+        liquidity=totalSupply()*_amount1/token1Reserve;
+        _mint(msg.sender,liquidity);
+      } 
+    }
     
+    return liquidity;
   }
-//移除流动性
-function removeLiquidity(uint256 _amount)public  returns(uint256,uint256){
-    require(_amount>0,"invalid");
-    uint256 ethAmount =address(this).balance *  _amount / totalSupply();
-    uint256 tokenAmount =getReserve() *  _amount / totalSupply();
+//移除流动性 
+function removeLiquidity(uint256 liquidity)public returns(uint256,uint256){
+    require(liquidity>0,"invalid");
+    assert(transfer(address(this), liquidity));
+    uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve, token2Reserve) = getReserve();//获取当前池子中的token数量
+    uint256 token1Amount =liquidity *   token1Reserve/ totalSupply();
+    uint256 token2Amount =liquidity *  token2Reserve / totalSupply();
 
-    _burn(msg.sender, _amount);
-    payable(msg.sender).transfer(ethAmount);
-    IERC20(tokenAddress).transfer(msg.sender, tokenAmount);
-    return(ethAmount,tokenAmount);
+    _burn(msg.sender, liquidity);
+    assert(IERC20(token1Address).transfer(msg.sender, token1Amount));
+    assert(IERC20(token2Address).transfer(msg.sender, token2Amount));
+    return(token1Amount,token2Amount);
   }
 
-  function getReserve() public view returns (uint256){
-    return IERC20(tokenAddress).balanceOf(address(this));
+  function getReserve() public view returns (uint256,uint256){
+    return (IERC20(token1Address).balanceOf(address(this)),IERC20(token2Address).balanceOf(address(this)));
   }
-  //对手续费的计算以及计算汇率
-  function getAmount(uint256 inputAmount,uint256 inputReserve, uint256 outputReserve)private pure returns(uint256){
-    require(inputReserve > 0&&outputReserve > 0,"invalid reserves");
+  // 对手续费的计算以及计算汇率
+  function  getAmount(uint256 inputAmount,uint256 inputReserve, uint256 outputReserve)private pure returns(uint256){
+    require( inputReserve > 0&&outputReserve > 0,"invalid reserves");
 
-    uint256 inputAmountWithFee = (inputAmount*3)/1000;
-    uint256 inputAmountWithoutFee = inputAmount-inputAmountWithFee;
-    uint256 numerator = inputAmountWithoutFee*outputReserve;
-    uint256 denominator = inputAmountWithoutFee + inputReserve  ;
-    return numerator/denominator;
+    uint256  inputAmountWithFee = (inputAmount*3)/1000;
+    uint256  inputAmountWithoutFee = inputAmount-inputAmountWithFee;
+    uint256  numerator = inputAmountWithoutFee*outputReserve;
+    uint256  denominator = inputAmountWithoutFee + inputReserve  ;
+    return  numerator/denominator;
   }
-  //交易功能
-  //获取当前eth能换多少token
-    function getTokenAmount(uint256 _ethSold)public view returns(uint256){
-    require(_ethSold > 0,"invalid");
-    uint256 tokenReserve = getReserve();
-    return getAmount(_ethSold, address(this).balance, tokenReserve);
+  // 交易功能
+  // 获取当前token1能换多少token2
+  function  getToken1Amount(uint256 _token1Sold)public view returns(uint256){
+    require(_token1Sold > 0,"invalid");
+    uint256 token1Reserve;
+    uint256 token2Reserve;
+     (token1Reserve, token2Reserve) = getReserve();
+    return getAmount(_token1Sold, token1Reserve, token2Reserve);
   }
   //获取当前token能换多少eth
-    function getEtherAmount(uint256 _tokenSold)public view returns(uint256){
-    require(_tokenSold > 0,"invalid");
-    uint256 tokenReserve = getReserve();
-    return getAmount(_tokenSold, tokenReserve, address(this).balance);
+    function getEtherAmount(uint256 _token2Sold)public view returns(uint256){
+    require(_token2Sold > 0,"invalid");
+     uint256 token1Reserve;
+    uint256 token2Reserve;
+     (token1Reserve, token2Reserve) = getReserve();
+    return getAmount(_token2Sold, token2Reserve, token1Reserve);
   }
-  //实现eth换取token
-  function ethToTokenSwap(uint256 _minTokens)public payable{
-    uint256 tokenReserve = getReserve();
-    uint256 tokenBought = getAmount(msg.value, address(this).balance-msg.value, tokenReserve);
-    
-    require(tokenBought>=_minTokens,"insuffcient output");
-    IERC20(tokenAddress).transfer(msg.sender, tokenBought);
+  //实现token2换取token1(交易)
+  function  token2ToToken1Swap(uint256 _token2Sold)public  returns(uint256){
+    uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve,token2Reserve) = getReserve();
+    uint256 token1Bought = getAmount(_token2Sold, token2Reserve, token1Reserve);
+    uint _minTokens = token1Bought-token1Bought*CaculateToken1Slippage(token1Bought);//滑点计算
+    require(token1Bought>=_minTokens,"insuffcient output");
+    IERC20(token2Address).transferFrom(msg.sender, address(this), token1Bought);
+    this.transfer(msg.sender, token1Bought);
+    return token1Bought;
   }
-//实现token换取eth
-  function TokenToethSwap(uint256 _tokenSold,uint256 _minEth)public {
-    uint256 tokenReserve = getReserve();
-    uint256 ethBought = getAmount(_tokenSold, tokenReserve,address(this).balance);
-    
-    require(ethBought>=_minEth,"insuffcient output");
-    IERC20(tokenAddress).transferFrom(msg.sender, address(this), _tokenSold);
-    payable(msg.sender).transfer(ethBought);
+//实现token1换取token2
+  function Token1ToToken2Swap(uint256 _token1Sold)public {
+   uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve,token2Reserve) = getReserve();
+    uint256 token2Bought = getAmount(_token1Sold, token1Reserve,token2Reserve);
+    uint256 _minEth = token2Bought-token2Bought*CaculateToken2Slippage(token2Bought);//滑点计算公式
+    require(token2Bought>=_minEth,"insuffcient output");
+    IERC20(token1Address).transferFrom(msg.sender, address(this), _token1Sold);
+    this.transfer(msg.sender, token2Bought);
   }
   //滑点百分比计算
-  function CaculateEthSlippage(uint256 _ethSold)public view returns(uint256){
-    return _ethSold/(getReserve()+_ethSold);
+  function  CaculateToken1Slippage(uint256 _token1Sold)public view returns(uint256){
+   uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve,token2Reserve) = getReserve();
+    return  _token1Sold/(token1Reserve+_token1Sold);
   }
 
-  function CaculateTokenSlippage(uint _tokenSold)public view returns(uint256){
-    return _tokenSold/(address(this).balance+_tokenSold);
+  function  CaculateToken2Slippage(uint256 _token2Sold)public view returns(uint256){
+   uint256 token1Reserve;
+    uint256 token2Reserve;
+    (token1Reserve,token2Reserve) = getReserve();
+    return  _token2Sold/(token2Reserve+_token2Sold);
+  }
+  function min(uint256 a ,uint256 b)public pure returns(uint256){
+    return a>b?1:0;
   }
 }
