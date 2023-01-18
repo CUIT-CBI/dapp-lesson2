@@ -6,16 +6,26 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FT is ERC20, Pausable, Ownable {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        _mint(msg.sender,10000*10**decimals());
+    }
+
+    mapping(address => bool) pairs;
+    modifier onlyPair(){
+        require(pairs[msg.sender]);
+        _;
+    }
     
-    function mint(address account, uint256 amount) external onlyOwner {
+    function setPair(address pair)public onlyOwner{
+        pairs[pair]=true;
+    }
+    function mint(address account, uint256 amount) external onlyPair {
         _mint(account, amount);
     }
 
     function burn(uint256 amount) external {
         _burn(msg.sender, amount);
     }
-
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
