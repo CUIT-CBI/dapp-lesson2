@@ -112,7 +112,7 @@ function removeL(uint256 liquidity)public returns(uint256,uint256){
     uint256 token1Bought = getAmount(_token2Sold, token2Reserve, token1Reserve);
     //uint _minTokens = token1Bought-token1Bought*CaculateToken1Slippage(token1Bought);//滑点计算
     require(token1Bought>=_mintokens,"insuffcient output");
-    IERC20(token2Address).transferFrom(msg.sender, address(this), token1Bought);
+    IERC20(token2Address).transferFrom(msg.sender, address(this), _token2Sold);
     this.transfer(msg.sender, token1Bought);
     return token1Bought;
   }
