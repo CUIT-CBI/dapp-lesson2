@@ -10,7 +10,7 @@ const abi1 =[
   "function unpause() external onlyOwner"
 ];
 const Georli = 'https://eth-goerli.g.alchemy.com/v2/GeRIcQ0nWlQWwS3tR0D1xsDfqkjNRBYu';
-const readbytecode = fs.readFileSync('./tokenbytecode.txt');
+const readbytecode = fs.readFileSync('./scripts/tokenbytecode.txt');
 
 const bytecode1 = readbytecode.toString();
 const providerGeorli = new ethers.providers.JsonRpcProvider(Georli);
@@ -44,7 +44,7 @@ let abi2 = [
   "function  CaculateToken2Slippage(uint256 _token2Sold)public view returns(uint256)",
   "function min(uint256 a ,uint256 b)public pure returns(uint256)"
 ];
-const readbytecode2 = fs.readFileSync('./exchangebytecode.txt');
+const readbytecode2 = fs.readFileSync('./scripts/exchangebytecode.txt');
 
 const bytecode2 = readbytecode2.toString();
 

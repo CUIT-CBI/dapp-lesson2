@@ -101,42 +101,42 @@ function removeLiquidity(uint256 liquidity)public returns(uint256,uint256){
     return getAmount(_token2Sold, token2Reserve, token1Reserve);
   }
   //实现token2换取token1(交易)
-  function  token2ToToken1Swap(uint256 _token2Sold)public  returns(uint256){
+  function  token2ToToken1Swap(uint256 _mintokens,uint256 _token2Sold)public  returns(uint256){
     uint256 token1Reserve;
     uint256 token2Reserve;
     (token1Reserve,token2Reserve) = getReserve();
     uint256 token1Bought = getAmount(_token2Sold, token2Reserve, token1Reserve);
-    uint _minTokens = token1Bought-token1Bought*CaculateToken1Slippage(token1Bought);//滑点计算
-    require(token1Bought>=_minTokens,"insuffcient output");
+    //uint _minTokens = token1Bought-token1Bought*CaculateToken1Slippage(token1Bought);//滑点计算
+    require(token1Bought>=_mintokens,"insuffcient output");
     IERC20(token2Address).transferFrom(msg.sender, address(this), token1Bought);
     this.transfer(msg.sender, token1Bought);
     return token1Bought;
   }
 //实现token1换取token2
-  function Token1ToToken2Swap(uint256 _token1Sold)public {
+  function Token1ToToken2Swap(uint256 _mintokens,uint256 _token1Sold)public {
    uint256 token1Reserve;
     uint256 token2Reserve;
     (token1Reserve,token2Reserve) = getReserve();
     uint256 token2Bought = getAmount(_token1Sold, token1Reserve,token2Reserve);
-    uint256 _minEth = token2Bought-token2Bought*CaculateToken2Slippage(token2Bought);//滑点计算公式
-    require(token2Bought>=_minEth,"insuffcient output");
+    // uint256 _mintoken = token2Bought-token2Bought*CaculateToken2Slippage(token2Bought);//滑点计算公式
+    require(token2Bought>=_mintokens,"insuffcient output");
     IERC20(token1Address).transferFrom(msg.sender, address(this), _token1Sold);
     this.transfer(msg.sender, token2Bought);
   }
-  //滑点百分比计算
-  function  CaculateToken1Slippage(uint256 _token1Sold)public view returns(uint256){
-   uint256 token1Reserve;
-    uint256 token2Reserve;
-    (token1Reserve,token2Reserve) = getReserve();
-    return  _token1Sold/(token1Reserve+_token1Sold);
-  }
+  // //滑点百分比计算
+  // function  CaculateToken1Slippage(uint256 _token1Sold)public view returns(uint256){
+  //  uint256 token1Reserve;
+  //   uint256 token2Reserve;
+  //   (token1Reserve,token2Reserve) = getReserve();
+  //   return  _token1Sold/(token1Reserve+_token1Sold);
+  // }
 
-  function  CaculateToken2Slippage(uint256 _token2Sold)public view returns(uint256){
-   uint256 token1Reserve;
-    uint256 token2Reserve;
-    (token1Reserve,token2Reserve) = getReserve();
-    return  _token2Sold/(token2Reserve+_token2Sold);
-  }
+  // function  CaculateToken2Slippage(uint256 _token2Sold)public view returns(uint256){
+  //  uint256 token1Reserve;
+  //   uint256 token2Reserve;
+  //   (token1Reserve,token2Reserve) = getReserve();
+  //   return  _token2Sold/(token2Reserve+_token2Sold);
+  // }
   function min(uint256 a ,uint256 b)public pure returns(uint256){
     return a>b?1:0;
   }
