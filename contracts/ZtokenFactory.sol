@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./FT.sol";
 
 // 参考地址https://github1s.com/finndayton/DEX/blob/HEAD/contracts/exchange.sol
-contract TokenExchange {
+contract ZtokenFactory {
     using SafeMath for uint;
     address public admin;
 

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./FT.sol";
  
  // 参考地址https://github1s.com/finndayton/DEX/blob/HEAD/contracts/exchange.sol
-contract ZYXCoin is IERC20 {
+contract Ztoken is IERC20 {
     using SafeMath for uint;
 
     string public constant symbol = 'ZYX';             
