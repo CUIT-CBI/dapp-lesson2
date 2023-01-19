@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
     },
     localhost: {
       url: "http://127.0.0.1:8545/",
-      accounts: ["d2934a4fc985660120d4c8df0591ef7f1206bf4ccb8a876feb4e912a8a331f42", "3029e8bcd2933ef0deba9a44000cbb8a6d55ae84470fff43a838facc69736b3c"]
+      accounts: ["0xd2934a4fc985660120d4c8df0591ef7f1206bf4ccb8a876feb4e912a8a331f42", "0x3029e8bcd2933ef0deba9a44000cbb8a6d55ae84470fff43a838facc69736b3c"]
     },
     heco_testnet: {
       url: "https://http-testnet.hecochain.com",
