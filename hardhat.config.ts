@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+const accounts = [""];//metamask私钥
 const config: HardhatUserConfig = {
   defaultNetwork: "localhost",
   networks: {
@@ -12,8 +13,10 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:8545/",
       accounts: ["0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e", "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0"]
     },
+
     heco_testnet: {
       url: "https://http-testnet.hecochain.com",
+      accounts,
       chainId: 256,
     },
     heco_mainnet: {
@@ -28,6 +31,7 @@ const config: HardhatUserConfig = {
       url: "https://bsc-dataseed1.binance.org",
       chainId: 56,
     },
+
   },
   solidity: {
     version: "0.8.17",
@@ -39,5 +43,4 @@ const config: HardhatUserConfig = {
     },
   },
 };
-
 export default config;
