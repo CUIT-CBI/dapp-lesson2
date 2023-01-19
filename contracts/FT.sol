@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract FT is ERC20, Pausable, Ownable {
+contract FT is EC20, Pausable, Ownable {
     constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
     
     function mint(address account, uint256 amount) external onlyOwner {
