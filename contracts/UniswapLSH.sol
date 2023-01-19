@@ -54,23 +54,22 @@ contract UniswapLSH is FT {
         }
     }
 
-    // 移除流动性
-    function removeLiquidity(uint _amount1) external {
-        require(_amount1 > 0 && _amount1 <= (balanceOf(msg.sender) * balance1) / totalSupply(), "amount error");
-        uint _amount2 = (_amount1 * balance2) / balance1;
-        // 销毁
-        _burn(msg.sender, _amount1);
-        // 转出token
-        assert(IERC20(token1).transfer(msg.sender, _amount1));
-        assert(IERC20(token2).transfer(msg.sender, _amount2));
-        // 更新池中代币数量
-        balance1 = balance1 - _amount1;
-        balance2 = balance2 - _amount2;
 
+    // 移除流动性
+    function removeLiquidity(uint _liquidityAmount) external {
+        require(_liquidityAmount > 0 && _liquidityAmount <= balanceOf(msg.sender), "amount error");
+        uint amount1 = _liquidityAmount * balance1 / totalSupply();
+        uint amount2 = _liquidityAmount * balance2 / totalSupply();
+        _burn(msg.sender, _liquidityAmount);
+        // 更新代币数量
+        balance1 = balance1 - amount1;
+        balance2 = balance2 - amount2;
+        assert(IERC20(token1).transfer(msg.sender, amount1));
+        assert(IERC20(token2).transfer(msg.sender, amount2));
     }
 
-    function getBothBalance() external view returns (uint, uint) {
-        return (balance1, balance2);
+    function getBothBalance() external view returns(uint,uint) {
+        return (balance1,balance2);
     }
 
 
@@ -85,7 +84,7 @@ contract UniswapLSH is FT {
     function swapToken1ForToken2(uint _min, uint _amount) external {
         uint amount = getAmount(_amount, balance1, balance2);
         // 手续费千分之三
-        amount = amount * 997 / 1000;
+        amount = amount * 997/1000;
         require(amount >= _min, "less than min");
         assert(IERC20(token1).transferFrom(msg.sender, address(this), _amount));
         assert(IERC20(token2).transfer(msg.sender, amount));
@@ -97,7 +96,7 @@ contract UniswapLSH is FT {
     function swapToken2ForToken1(uint _min, uint _amount) external {
         uint amount = getAmount(_amount, balance2, balance1);
         // 手续费千分之三
-        amount = amount * 997 / 1000;
+        amount = amount * 997/1000;
         require(amount >= _min, "less than min");
         assert(IERC20(token2).transferFrom(msg.sender, address(this), _amount));
         assert(IERC20(token1).transfer(msg.sender, amount));
