@@ -6,8 +6,12 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FT is ERC20, Pausable, Ownable {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
-    
+    //constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+     constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        _mint(msg.sender, 10000 * 10 ** decimals());
+    }
+
+
     function mint(address account, uint256 amount) external onlyOwner {
         _mint(account, amount);
     }
@@ -28,3 +32,4 @@ contract FT is ERC20, Pausable, Ownable {
         _unpause();
     }
 }
+
