@@ -1,0 +1,157 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+
+import "./FT.sol";
+import "hardhat/console.sol";
+
+contract wwzExchange {
+    address private tokenA;
+    address private tokenB;
+    uint256 private k;
+
+    mapping(address => uint256) private pool;
+    mapping(address => mapping(address => uint256)) private liquidity;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = _tokenA;
+        tokenB = _tokenB;
+    }
+
+    // 返回池中FT的余额
+    function poolAmount(address _ft) public view returns(uint256) {
+        return pool[_ft];
+    }
+    // 更新池，即查询余额后修改映射
+    function updatePool(address _ft) internal {
+        pool[_ft] = FT(_ft).balanceOf(address(this));
+    }
+    // 获取k
+    function getk() public view returns(uint256){
+        return k;
+    }
+    // 更新_k
+    function updateK() internal {
+        k = poolAmount(tokenA) * poolAmount(tokenB);
+    }
+    // 计算手续费，为千分之三
+    function serviceFee(uint256 fee) internal pure returns(uint256) {
+        return fee * 997 / 1000;
+    }
+    // 获取tokenAB的地址
+    function getAddrOfA() public view returns(address) {
+        return tokenA;
+    }
+    function getAddrOfB() public view returns(address) {
+        return tokenB;
+    }
+    
+    function addLiquidity(uint256 a, uint256 b) public returns(uint256 AmountA, uint256 AmountB) {
+        //判断余额是否正确
+        require( a != 0 || b != 0, "invalid value");
+        require(A_balance(msg.sender) >= a && B_balance(msg.sender) >= b , "Balance not enough");
+        
+        FT(tokenA).transferFrom(msg.sender, address(this), a);
+        FT(tokenB).transferFrom(msg.sender, address(this), b);
+        updatePool(tokenA);
+        updatePool(tokenB);
+        updateK();
+        // 更新流动性, 扣除手续费，手续费直接加入池中，即本合约在对应的FT的余额
+        liquidity[msg.sender][tokenA] += serviceFee(a);
+        liquidity[msg.sender][tokenB] += serviceFee(b);
+        // 返回池余额，即本合约在对应FT余额
+        AmountA = poolAmount(tokenA);
+        AmountB = poolAmount(tokenB);
+        return (AmountA, AmountB);
+    }
+
+    // 移出流动性
+    function removeLiquidity(uint256 _a, uint256 _b) public returns(uint256 amountA, uint256 amountB) {
+        require(_a != 0 || _b != 0, "invalid value");
+        require(poolAmount(tokenA) >= _a && poolAmount(tokenB) >= _b, "Not enough pool amount");  
+        require(liquidity[msg.sender][tokenA] >= serviceFee(_a) && liquidity[msg.sender][tokenB] >= serviceFee(_b),"Not enough liquidity");
+        // 更新流动性, 扣除手续费，手续费直接加入池中，即本合约在对应的ft的余额
+        liquidity[msg.sender][tokenA] -= serviceFee(_a);
+        liquidity[msg.sender][tokenB] -= serviceFee(_b);
+        
+        // 转出扣除手续费之后的FT
+        FT(tokenA).transfer(msg.sender, serviceFee(_a));
+        FT(tokenB).transfer(msg.sender, serviceFee(_b));
+        updatePool(tokenA);
+        updatePool(tokenB);
+        updateK();
+        // 返回池余额，即本合约在对应FT余额
+        amountA = poolAmount(tokenA);
+        amountB = poolAmount(tokenB);
+        return (amountA, amountB);
+    }
+
+    // 用tokenA交易得到计算值的tokenB
+    function swapExactAforB(uint256 a) public returns(uint256 amountA, uint256 amountB) {
+        uint256 FeeB = ExchangeAForB(a);
+        require( a != 0, "invalid value");
+        require(poolAmount(tokenB) >= FeeB, "Not enough token");
+        // 转入FT
+        FT(tokenA).transferFrom(msg.sender, address(this), a);
+        require(ExchangeAForB(a) == FeeB, "pool has changed");
+        // 转出扣除手续费之后的FT
+        FT(tokenB).transfer(msg.sender, FeeB);
+        //更新池子余额
+        updatePool(tokenA);
+        updatePool(tokenB);
+        updateK();
+        amountA = poolAmount(tokenA);
+        amountB = poolAmount(tokenB);
+        return (amountA, amountB);
+    }
+
+    // 用tokenB交易得到计算值的tokenA
+    function swapExactBforA(uint256 _b) public returns(uint256 amountA, uint256 amountB) {
+        uint256 FeeA = ExchangeBForA(_b);
+        require(_b != 0, "invalid value");
+        require(poolAmount(tokenA) >= FeeA, "Not enough token");
+        // 转入FT
+        FT(tokenB).transferFrom(msg.sender, address(this), _b);
+        require(ExchangeBForA(_b) == FeeA, "pool has changed");
+        // 转出扣除手续费之后的FT
+        FT(tokenA).transfer(msg.sender, FeeA);
+        //更新池子
+        updatePool(tokenA);
+        updatePool(tokenB);
+        updateK();
+        
+        amountA = poolAmount(tokenA);
+        amountB = poolAmount(tokenB);
+        return (amountA, amountB);
+    }
+
+    // 计算当前用tokenA交易得到tokenB的数量
+    function ExchangeAForB(uint256 _a) public view returns(uint256 _b) {
+        require(_a != 0, "invalid value");
+        require(getk() != 0, "k=0");
+        require(poolAmount(tokenA) + serviceFee(_a) != 0, "Math error");
+        uint256 calculatedB = getk() / (poolAmount(tokenA) + serviceFee(_a));
+        return poolAmount(tokenA) - calculatedB;
+    }
+    // 计算当前用tokenB交易得到tokenA的数量
+    function ExchangeBForA(uint256 _b) public view returns(uint256 _a) {
+        require(_b != 0, "invalid value");
+        require(getk() != 0, "k=0");
+        require(poolAmount(tokenB) + serviceFee(_b) != 0, "Math error");
+        uint256 calculatedA = getk() / (poolAmount(tokenB) + serviceFee(_b));
+        return poolAmount(tokenB) - calculatedA;
+    }
+
+    //查询余额和AB数量
+    function poolOfA()public view returns(uint256) {
+        return FT(tokenA).balanceOf(address(this));
+    }
+    function poolOfB()public view returns(uint256) {
+        return FT(tokenB).balanceOf(address(this));
+    }
+    function A_balance(address _account) public view returns(uint256) {
+        return FT(tokenA).balanceOf(_account);
+    }
+    function B_balance(address _account) public view returns(uint256) {
+        return FT(tokenB).balanceOf(_account);
+    }
+}
