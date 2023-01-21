@@ -6,6 +6,16 @@ async function main() {
   const ft = await FT.deploy("CBI", "CUIT");
 
   await ft.deployed();
+
+  const token0 = await FT.deploy("token0","SZY_A");
+  await token0.deployed();
+
+  const token1 = await FT.deploy("token1","SZY_B");
+  await token1.deployed();
+
+  
+  const Pair = await FT.deployed(ft.address,token0.address,token1.address);
+  await Pair.deployed();
   console.log(`FT deployed to ${ft.address}`);
 }
 
