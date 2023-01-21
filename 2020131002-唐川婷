@@ -1,0 +1,36 @@
+这个交易池中存在着两个智能合约地址token0 与 token1。
+contract LooneySwapPool is ERC20 { 
+  address public token0; 
+  address public token1; 
+ 
+ // Reserve of token 0  
+ uint public reserve0; 
+ 
+ // Reserve of token 1   
+uint public reserve1; 
+  ... 
+} 
+constructor(address _token0, address _token1) ERC20("LiquidityProvider", "LP") {
+  token0 = _token0;
+  token1 = _token1;
+}
+function add(uint amount0, uint amount1)//添加流动性
+assert(IERC20(token0).transferFrom(msg.sender,address(this),amount0));
+assert(IERC20(token1).transferFrom(msg.sender, address(this), amount1));//用户将代币转移至池中
+_mint(msg.sender, INITIAL_SUPPLY);
+uint reserve0After = reserve0 + amount0;
+uint reserve1After = reserve1 + amount1;
+...
+uint currentSupply = totalSupply(); // Current supply of LP tokens
+uint newSupplyGivenReserve0Ratio = reserve0After * currentSupply / reserve0;
+uint newSupplyGivenReserve1Ratio = reserve1After * currentSupply / reserve1;
+uint newSupply = Math.min(newSupplyGivenReserve0Ratio, newSupplyGivenReserve1Ratio);
+_mint(msg.sender, newSupply - currentSupply);
+function getAmountOut (uint amountIn, address fromToken) {
+  ...
+  uint k = reserve0 * reserve1;
+  ...
+  newReserve0 = amountIn + reserve0;
+  newReserve1 = k / newReserve0;
+  amountOut = reserve1 - newReserve1;
+}
