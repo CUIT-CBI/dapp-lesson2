@@ -69,14 +69,14 @@ contract Swap is myERC20{
         } else {
             uint amountBOptimal = amountADesired * reserveB / reserveA;
             if (amountBOptimal <= amountBDesired) {
-                require(amountBOptimal >= amountBMin, "UniswapV2Router: INSUFFICIENT_B_AMOUNT");
+                require(amountBOptimal >= amountBMin, "INSUFFICIENT_B_AMOUNT");
                 ERC20(TokenA).transferFrom(msg.sender, address(this), amountADesired);
                 ERC20(TokenB).transferFrom(msg.sender, address(this), amountBOptimal);
                 mint(address(this));
             } else {
                 uint amountAOptimal = amountBDesired * reserveA / reserveB;
                 assert(amountAOptimal <= amountADesired);
-                require(amountAOptimal >= amountAMin, "UniswapV2Router: INSUFFICIENT_A_AMOUNT");
+                require(amountAOptimal >= amountAMin, "INSUFFICIENT_A_AMOUNT");
                 ERC20(TokenA).transferFrom(msg.sender, address(this), amountAOptimal);
                 ERC20(TokenB).transferFrom(msg.sender, address(this), amountBDesired);
                 mint(address(this));
@@ -157,7 +157,7 @@ contract Swap is myERC20{
         } else {
             liquidity = Math.min(amountA * _totalSupply / reserveA, amountB * _totalSupply / reserveB);
         }
-        require(liquidity > 0, "UniswapV2: INSUFFICIENT_LIQUIDITY_MINTED");
+        require(liquidity > 0, "INSUFFICIENT_LIQUIDITY_MINTED");
         _mint(to, liquidity);
     }
 
