@@ -15,8 +15,9 @@ async function main() {
   console.log(`Token1 deployed to ${TokenB.address}`);
 
   // 创建币对交易池子
-  const wkSwap = await factory.createPair(TokenA.address, TokenB.address);
-  console.log(`Swap deployed to ${wkSwap.address}`);
+  let wkSwap = await factory.createPair(TokenA.address, TokenB.address);
+  console.log(`Swap deployed to ${wkSwap}`);
+  // 
 }
 
 // We recommend this pattern to be able to use async/await everywhere
