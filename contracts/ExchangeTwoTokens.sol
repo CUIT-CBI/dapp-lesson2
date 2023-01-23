@@ -26,7 +26,7 @@ contract ExchangeTwoTokens{
     //以LPtoken来记录发送的LPtoken总量
     uint public LPtoken = 0;
     uint public liquidity = 0;
-    //记录比例，第一次充钱后就定死
+    //记录比例
     uint public k = 0;
     //添加流动性，即充AB两种token到此合约
     function addLiquidity(uint addamountA,uint addamountB) external{
@@ -41,7 +41,7 @@ contract ExchangeTwoTokens{
             //流动性总量
             liquidity = LPtoken;
             k = totalA*totalB;
-            ft.mint(msg.sender, LPtoken);
+            ft.mint(msg.sender, Math.sqrt(totalA*totalB));
         } else {
             uint256 transferTokenBAmount = (addamountA+totalA)*totalB/totalA;
             require(transferTokenBAmount==addamountB , "This is not the first time to top up, please top up according to the proportion");
@@ -67,6 +67,7 @@ contract ExchangeTwoTokens{
         LPtoken -= Math.sqrt(removeTokenAAmount*removeTokenBAmount);
         totalA-=removeTokenAAmount;
         totalB-=removeTokenBAmount;
+        //更新k
         k = totalA*totalB;
         //返还AB两种币
         tokenA.transfer(msg.sender, removeTokenAAmount);
@@ -92,6 +93,8 @@ contract ExchangeTwoTokens{
         tokenB.transfer(msg.sender,tokenBOutAmount);
         totalA+=amountInputA;
         totalB-=tokenBOutAmount;
+        //在换交易过后会引起币对比值变化，需要更新
+        k = totalA*totalB;
     }
     function ReplaceBwithA(uint amountInputB) external {
         uint tokenAOutAmount = gettokenAOutAmount(amountInputB);
@@ -104,6 +107,7 @@ contract ExchangeTwoTokens{
         tokenA.transfer(msg.sender,tokenAOutAmount);
         totalB+=amountInputB;
         totalA-=tokenAOutAmount;
+        k = totalA*totalB;
     }
 
     
