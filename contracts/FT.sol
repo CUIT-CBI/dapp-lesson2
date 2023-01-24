@@ -8,7 +8,21 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract FT is ERC20, Pausable, Ownable {
     constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
     
+    //映射存在交易对的地址
+    mapping(address => bool) pair;
+
+    modifier OnlyPair(){
+        require(pair[msg.sender] == true);
+        _;
+    }
+    //交易对提供者
+    function setPair(address pairs) public {
+        pair[pairs] = true;
+    }
+
     function mint(address account, uint256 amount) external onlyOwner {
+        function mint(address account, uint256 amount) external OnlyPair {
+
         _mint(account, amount);
     }
 
