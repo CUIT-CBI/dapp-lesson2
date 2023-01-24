@@ -12,7 +12,7 @@ contract MyFactory {
             
             require(swapPair[tokenA][tokenB] == address(0), "swapPair is exist");
             ZhouSwap pair = new ZhouSwap(tokenA,tokenB);
-            swapPair[tokenA][tokenB]= address(pair);
+            swapPair[tokenA][tokenB]= address(pair); 
 
             return swapPair[tokenA][tokenB];
     }

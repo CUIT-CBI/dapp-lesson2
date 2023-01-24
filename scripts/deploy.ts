@@ -20,6 +20,7 @@ async function main() {
   //创建token对
   const pair = await factory.createPairs(tokenA.address,tokenB.address);
   console.log(`pair deployed to ${pair.address}`);
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
