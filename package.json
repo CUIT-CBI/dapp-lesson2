@@ -1,7 +1,7 @@
 {
   "name": "dapp2",
   "version": "1.0.0",
-  "description": "",
+  "description": "This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,11 +11,22 @@
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@typechain/ethers-v5": "^10.2.0",
+    "@typechain/hardhat": "^6.1.5",
     "hardhat": "^2.12.6",
     "ts-node": "^10.9.1",
+    "typechain": "^8.1.1",
     "typescript": "^4.9.4"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liuyijiaa/dapp-lesson2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liuyijiaa/dapp-lesson2/issues"
+  },
+  "homepage": "https://github.com/liuyijiaa/dapp-lesson2#readme"
 }
