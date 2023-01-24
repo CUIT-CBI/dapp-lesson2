@@ -136,11 +136,11 @@ contract exchange is ERC20{
 
         //转账,手续费
         if (amount0Out > 0 ){
-            uint256 amount0Out_ =amount0Out amount0Out * 3 / 1000;
+            uint256 amount0Out_ =amount0Out - amount0Out * 3 / 1000;
             _safeTransfer(token0, to, amount0Out_);
         }
         if (amount1Out > 0 ){
-            uint256 amount1Out_ =amount1Out amount1Out * 3 / 1000;
+            uint256 amount1Out_ =amount1Out - amount1Out * 3 / 1000;
             _safeTransfer(token1, to, amount1Out_);
         }
     }
