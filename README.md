@@ -1,36 +1,13 @@
-# Sample Hardhat Protocol
+# Sample Hardhat Project
 
-## install dependencies
-```
-yarn
-```
+This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
 
-## compile contracts
-```
-yarn compile
-```
+Try running some of the following tasks:
 
-## start a local node
-```
-yarn localnode
-```
-
-## deploy contracts
-modify ```hardhat.config.ts``` and run
-```
-yarn deploy
-```
-
-for examples:
-```
-heco_testnet: {
-    url: "https://http-testnet.hecochain.com",
-    chainId: 256,
-    accounts: ["0x..."]
-},
-```
-
-## test contracts
-```
-yarn test
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.ts
 ```
