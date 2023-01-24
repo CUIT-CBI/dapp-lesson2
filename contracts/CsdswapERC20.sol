@@ -7,6 +7,6 @@ contract UniswapERC20 is ERC20{
     constructor() ERC20("Csd Uniswap","Csd"){
 
     }
-
+    
 
 }

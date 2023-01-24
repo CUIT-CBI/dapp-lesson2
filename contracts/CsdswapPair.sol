@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./UniswapERC20.sol";
 import './libraries/Math.sol';
-contract UniswapV2Pair is UniswapERC20{
+contract CsdswapPair is CsdswapERC20{
     
     using SafeMath  for uint;
 
@@ -31,9 +31,6 @@ contract UniswapV2Pair is UniswapERC20{
     }
 
 
-    function mint(address to) external  returns (uint liquidity){
-
-    }
 
     // 增加流动性
     function addLiquidity(address to,uint amount0,uint amount1) returns(uint liquidity){
@@ -56,8 +53,7 @@ contract UniswapV2Pair is UniswapERC20{
        require(IERC20(token0).transferFrom(msg.sender,address(this),amount0),"token0 trasfer failed");
        require(IERC20(token1).transferFrom(msg.sender,address(this),amount1),"token1 trasfer failed");
     }
-
-    //去除流动性
+    
     function removeLiquidity(uint256 liquidity)public returns(uint256,uint256){
         uint _reserve0=IERC20(token0).balanceOf(address(this));
         uint _reserve1=IERC20(token1).balanceOf(address(this));
@@ -96,7 +92,7 @@ contract UniswapV2Pair is UniswapERC20{
        IERC20(token).transfer(msg.sender, amount);
     }
     function newAmount(uint256 amount)private{
-        uint256 fee=factory.feePercentage();
+        uint256 fee=CsdswapFactory(factory).feePercentage();
         return amount*(1000-fee)/1000;
     }
 }
