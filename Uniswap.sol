@@ -70,7 +70,7 @@ function swap(uint amountIn, uint minAmountOut, address fromToken, address toTok
     require(fromToken != toToken);
 
     //调用函数
-    (uint amountOut, uint newReserveA, uint newReserveB) = getAmountOut(amountIn, fromToken);
+    (uint amountOut, uint newReserveA, uint newReserveB) = get(amountIn, fromToken);
     require(amountOut >= minAmountOut);
     //转移token
     assert(IERC20(fromToken).transferFrom(msg.sender, address(this), amountIn));
@@ -85,7 +85,7 @@ function swap(uint amountIn, uint minAmountOut, address fromToken, address toTok
 *1.k=x*y
 *2.交易费千分之三
 **/
-function getAmountOut (uint amountIn, address fromToken) public view returns (uint amountOut, uint _reserveA, uint _reserveB) {
+function get (uint amountIn, address fromToken) public view returns (uint amountOut, uint _reserveA, uint _reserveB) {
     uint newReserveA;
     uint newReserveB;
     uint k = reserveA * reserveB;
