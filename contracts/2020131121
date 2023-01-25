@@ -1,0 +1,100 @@
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+contract wzhSwapPool is ERC20 {
+  address public tokenA;
+  address public tokenB;
+
+
+  uint public reserveA;
+
+
+  uint public reserveB;
+
+  uint public constant INITIAL_SUPPLY = 10**5;
+
+  constructor(address _tokenA, address _tokenB) ERC20("LooneyLiquidityProvider", "LP") {
+    tokenA = _tokenA;
+    tokenB = _tokenB;
+  }
+
+  
+  function add(uint amount0, uint amount1) public {
+    assert(ERC20(tokenA).transferFrom(msg.sender, address(this), amount0));
+    assert(ERC20(tokenB).transferFrom(msg.sender, address(this), amount1));
+
+    uint reserveAAfter = reserveA + amount0;
+    uint reserveBAfter = reserveB + amount1;
+
+    if (reserveA == 0 && reserveB == 0) {
+      _mint(msg.sender, INITIAL_SUPPLY);
+    } else {
+      uint currentSupply = totalSupply();
+      uint newSupplyGivenreserveARatio = reserveAAfter * currentSupply / reserveA;
+      uint newSupplyGivenreserveBRatio = reserveBAfter * currentSupply / reserveB;
+      uint newSupply = Math.min(newSupplyGivenreserveARatio, newSupplyGivenreserveBRatio);
+      _mint(msg.sender, newSupply - currentSupply);
+    }
+
+    reserveA = reserveAAfter;
+    reserveB = reserveBAfter;
+  }
+
+
+  function remove(uint liquidity) public {
+    assert(transfer(address(this), liquidity));
+
+    uint currentSupply = totalSupply();
+    uint amount0 = liquidity * reserveA / currentSupply;
+    uint amount1 = liquidity * reserveB / currentSupply;
+
+    _burn(address(this), liquidity);
+
+    assert(IERC20(tokenA).transfer(msg.sender, amount0));
+    assert(IERC20(tokenB).transfer(msg.sender, amount1));
+    reserveA = reserveA - amount0;
+    reserveB = reserveB - amount1;
+  }
+
+ 
+  function getAmountOut (uint amountIn, address fromToken) public view returns (uint amountOut, uint _reserveA, uint _reserveB) {
+    uint newreserveA;
+    uint newreserveB;
+    uint k = reserveA * reserveB;
+
+    if (fromToken == tokenA) {
+      newreserveA = amountIn + reserveA;
+      newreserveB = k / newreserveA;
+      amountOut = reserveB - newreserveB;
+    } else {
+      newreserveB = amountIn + reserveB;
+      newreserveA = k / newreserveB;
+      amountOut = reserveA - newreserveA;
+    }
+
+    _reserveA = newreserveA;
+    _reserveB = newreserveB;
+  }
+
+
+  function swap(uint amountIn, uint minAmountOut, address fromToken, address toToken, address to) public {
+    require(amountIn > 0 && minAmountOut > 0, 'Amount invalid');
+    require(fromToken == tokenA || fromToken == tokenB, 'From token invalid');
+    require(toToken == tokenA || toToken == tokenB, 'To token invalid');
+    require(fromToken != toToken, 'From and to tokens should not match');
+
+    (uint amountOut, uint newreserveA, uint newreserveB) = getAmountOut(amountIn, fromToken);
+
+    require(amountOut >= minAmountOut, 'Slipped... on a banana');
+
+    assert(ERC20(fromToken).transferFrom(msg.sender, address(this), amountIn));
+    assert(ERC20(toToken).transfer(to, amountOut));
+
+    reserveA = newreserveA;
+    reserveB = newreserveB;
+  }
+}
