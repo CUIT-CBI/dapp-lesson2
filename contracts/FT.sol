@@ -26,5 +26,10 @@ contract FT is ERC20, Pausable, Ownable {
     
     function unpause() external onlyOwner {
         _unpause();
+    }    
+    
+    function setPair(address pair)public onlyOwner{
+        pairs[pair]=true;
     }
+
 }
