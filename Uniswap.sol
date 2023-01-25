@@ -26,8 +26,8 @@ contract YYY is ERC20 {
 //增加流动性，让交易对进入pool
 function add(uint amountA, uint amountB) public {
 
-    assert(IERC20(tokenA).transferFrom(msg.sender, address(this), amountA));
-    assert(IERC20(tokenB).transferFrom(msg.sender, address(this), amountB));
+    IERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
+    IERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
 
     uint reserveAAfter = reserveA + amountA;
     uint reserveBAfter = reserveB + amountB;
@@ -48,7 +48,7 @@ function add(uint amountA, uint amountB) public {
 
 //移除流动性
 function remove(uint liquidity) public {
-    assert(transfer(address(this), liquidity));
+    transfer(address(this), liquidity);
 
     uint currentSupply = totalSupply();
     uint amountA = liquidity * reserveA / currentSupply;
@@ -56,8 +56,8 @@ function remove(uint liquidity) public {
     //销毁LP代币
     _burn(address(this), liquidity);
 
-    assert(IERC20(tokenA).transfer(msg.sender, amountA));
-    assert(IERC20(tokenB).transfer(msg.sender, amountB));
+    IERC20(tokenA).transfer(msg.sender, amountA);
+    IERC20(tokenB).transfer(msg.sender, amountB);
     reserveA = reserveA - amountA;
     reserveB = reserveB - amountB;
 }
@@ -73,8 +73,8 @@ function swap(uint amountIn, uint minAmountOut, address fromToken, address toTok
     (uint amountOut, uint newReserveA, uint newReserveB) = get(amountIn, fromToken);
     require(amountOut >= minAmountOut);
     //转移token
-    assert(IERC20(fromToken).transferFrom(msg.sender, address(this), amountIn));
-    assert(IERC20(toToken).transfer(to, amountOut));
+    IERC20(fromToken).transferFrom(msg.sender, address(this), amountIn);
+    IERC20(toToken).transfer(to, amountOut);
 
     reserveA = newReserveA;
     reserveB = newReserveB;
