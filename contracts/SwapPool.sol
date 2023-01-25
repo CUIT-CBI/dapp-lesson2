@@ -15,8 +15,6 @@ contract SwapPool is ERC20 {
   uint public reserve0;
   uint public reserve1;
 
-
-
   //初始化
   uint256 public INITIAL_SUPPLY = 10**5;
 
@@ -101,7 +99,6 @@ contract SwapPool is ERC20 {
     _reserve1 = newReserve1;
   }
 
-  
   
   function swap(uint amountIn, uint point,address fromToken, address toToken, address to) public {
     require(amountIn > 0 , 'Amount invalid');
