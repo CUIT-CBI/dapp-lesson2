@@ -1,0 +1,127 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+contract test is ERC20 {
+  address public token0;
+  address public token1;
+
+  //保留token 0
+  uint public reserve0;
+
+  //保留token 1
+  uint public reserve1;
+
+  uint public constant INITIAL_SUPPLY = 10**5;
+
+  constructor(address _token0, address _token1) ERC20("LooneyLiquidityProvider", "LP") {
+    token0 = _token0;
+    token1 = _token1;
+  }
+
+  //实现手续费功能，千分之三手续费
+    function inputFee(uint amountIn,uint reserve0In,uint reserve1Out) public pure returns(uint amountOut){
+        uint feeOn = amountIn.mul(997);
+        uint molecule = feeOn.mul(reserve1Out);
+        uint denominator = feeOn.add(reserve0In.mul(1000));
+        amountOut = molecule / denominator;
+    }
+  
+    function outputFee(uint outputAmount,uint inputReserve,uint ouputReserve) public pure returns(uint amount){
+        uint molecule = inputReserve.mul(outputAmount).mul(1000);
+        uint denominator = (ouputReserve.sub(outputAmount)).mul(997);
+        amount = molecule / denominator + 1;
+    }
+}
+
+  //增加流动性
+  function add(uint amount0, uint amount1) public {
+    assert(IERC20(token0).transferFrom(msg.sender, address(this), amount0));
+    assert(IERC20(token1).transferFrom(msg.sender, address(this), amount1));
+
+    uint reserve0After = reserve0 + amount0;
+    uint reserve1After = reserve1 + amount1;
+
+    if (reserve0 == 0 && reserve1 == 0) {
+      _mint(msg.sender, INITIAL_SUPPLY);
+    } else {
+      uint currentSupply = totalSupply();
+      uint newSupplyGivenReserve0Ratio = reserve0After * currentSupply / reserve0;
+      uint newSupplyGivenReserve1Ratio = reserve1After * currentSupply / reserve1;
+      uint newSupply = Math.min(newSupplyGivenReserve0Ratio, newSupplyGivenReserve1Ratio);
+      _mint(msg.sender, newSupply - currentSupply);
+    }
+
+    reserve0 = reserve0After;
+    reserve1 = reserve1After;
+  }
+
+  //移出流动性
+  function remove(uint liquidity) public {
+    assert(transfer(address(this), liquidity));
+
+    uint currentSupply = totalSupply();
+    uint amount0 = liquidity * reserve0 / currentSupply;
+    uint amount1 = liquidity * reserve1 / currentSupply;
+
+    _burn(address(this), liquidity);
+
+    assert(IERC20(token0).transfer(msg.sender, amount0));
+    assert(IERC20(token1).transfer(msg.sender, amount1));
+    reserve0 = reserve0 - amount0;
+    reserve1 = reserve1 - amount1;
+  }
+
+  /**
+   *使用x*y=k公式计算输出量。
+   */
+
+  function getAmountOut (uint amountIn, address fromToken) public view returns (uint amountOut, uint _reserve0, uint _reserve1) {
+    uint newReserve0;
+    uint newReserve1;
+    uint k = reserve0 * reserve1;
+
+    if (fromToken == token0) {
+      newReserve0 = amountIn + reserve0;
+      newReserve1 = k / newReserve0;
+      amountOut = reserve1 - newReserve1;
+    } else {
+      newReserve1 = amountIn + reserve1;
+      newReserve0 = k / newReserve1;
+      amountOut = reserve0 - newReserve0;
+    }
+
+    _reserve0 = newReserve0;
+    _reserve1 = newReserve1;
+  }
+
+  /**
+   交换到最小值`minAmountOut`
+   */
+  function swap1_0(uint amount0,uint minAmount0,address to) public returns(uint amount1){
+        require(amount0 > 0 && minAmount0 > 0);
+        uint _reserve0 = IERC20(token0).balanceOf(address(this));
+        uint _reserve1 = IERC20(token1).balanceOf(address(this));
+        IERC20(token0).transferFrom(msg.sender,address(this),amount0);
+        amount1 = inputFee(amount0, _reserve0, _reserve1);
+        require(amount1 > minAmount0);
+        IERC20(token1).transfer(to, amount1);
+
+        emit Swap(address(this), to, amount0, amount1);
+    }
+
+    function swap0_1(uint amount1,uint minAmount1,address to) public returns(uint amount0){
+        require(amount1 > 0 && minAmount1 > 0);
+        uint _reserve0 = IERC20(token0).balanceOf(address(this));
+        uint _reserve1 = IERC20(token1).balanceOf(address(this));
+        IERC20(token1).transferFrom(msg.sender, address(this), amount1);
+        amount0 = inputFee(amount1, _reserve1, _reserve0);
+        require(amount0 > minAmount1);
+        IERC20(token0).transfer(to, amount0);
+
+        emit Swap(address(this), to, amount1, amount0);
+    }
+}
