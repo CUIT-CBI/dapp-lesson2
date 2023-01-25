@@ -314,7 +314,6 @@ interface uniSwap{
         uint amountETHMin,
         address to
     ) external returns (uint amountToken, uint amountETH);
-    // 5、凭许可证消除流动性
 }
 
 contract MyUni {
