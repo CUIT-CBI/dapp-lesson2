@@ -24,7 +24,6 @@ contract SwapPool is ERC20 {
     owner = msg.sender;
   }
 
-  
   function addMobility(uint amount0, uint amount1) public {
     assert(ERC20(token0).transferFrom(msg.sender, address(this), amount0));
     assert(ERC20(token1).transferFrom(msg.sender, address(this), amount1));
