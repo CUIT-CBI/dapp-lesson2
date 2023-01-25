@@ -36,7 +36,7 @@ contract PYJ is FT {
     uint256 private reserve0;
     uint256 private reserve1;
 
-    // liquidity
+    //liquidity
     uint256 constant MIN_LIQUIDITY = 10**3;
 
     error TransferFailed();
@@ -51,18 +51,17 @@ contract PYJ is FT {
         token0 = _token0;
         token1 = _token1;
     }
-
-   // update
+    
     function _update(uint256 balance0, uint256 balance1) private {
         reserve0 = balance0;
         reserve1 = balance1;
     }
-   // fee charge
+
     function Charge(uint256 total) internal pure returns (uint256) {
         uint256 fee = (total * 997) / 1000;
         return fee;
     }
-    // addLiquidity
+    // 增加流动性
     function addLiquidity() public {
         (uint256 _reserve0, uint256 _reserve1, ) = getReserves();
 
@@ -90,7 +89,7 @@ contract PYJ is FT {
         _update(balance0, balance1);
     }
 
-    // removeLiquidity
+    // 去除流动性
     function removeLiquidity(address to)
         public
         returns (uint256 amount0, uint256 amount1)
@@ -111,7 +110,7 @@ contract PYJ is FT {
         _update(balance0, balance1);
     }
 
-    // slip point
+    // 滑点
     function SlipLimited(uint256 amount0out,uint256 amount1out,address to) public {
         (uint256 _reserve0, uint256 _reserve1, ) = getReserves();
 
@@ -131,7 +130,6 @@ contract PYJ is FT {
         }
     }
 
-    // swap
     function swap(uint256 amount0out,uint256 amount1out,address to) public returns (uint256) {
         (uint256 _reserve0, uint256 _reserve1, ) = getReserves();
 
@@ -180,7 +178,6 @@ contract PYJ is FT {
         }
     }
 
-    // safeTransform
     function _safeTransfer(address token0,address to,uint256 value) private {
         (bool success, bytes memory data) = token0.call(
             abi.encodeWithSignature("transfer(addtess,uint256)", to, value)
@@ -190,7 +187,6 @@ contract PYJ is FT {
         }
     }
 
-    //getReserve
     function getReserves()public view returns (uint256,uint256,uint32){
         return (reserve0, reserve1, 0);
     }
