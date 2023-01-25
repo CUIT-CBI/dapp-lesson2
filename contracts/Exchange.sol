@@ -8,7 +8,7 @@ pragma solidity ^0.8.9;
 contract Exchange is ERC20{
   address public tokenAddress;
 
-    constructor(address _tokenAddress)ERC20("dyx" , "dfy"){
+    constructor(address _tokenAddress)ERC20("sam" , "SAM"){
       require(_tokenAddress != address(0),"invalid address");
       tokenAddress=_tokenAddress;
 
