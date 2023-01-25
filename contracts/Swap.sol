@@ -251,32 +251,30 @@ interface uniSwap{
         uint amountIn,
         uint amountOutMin,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to 
     ) external returns (uint[] memory amounts);
     // 2、用代币交唤指定的代币
      function swapTokensForExactTokens(
         uint amountOut,
         uint amountInMax,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to
     ) external returns (uint[] memory amounts);
     // 3、用指定的 ETH 币交唤代币 
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
+    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to)
         external
         payable
         returns (uint[] memory amounts);
     // 4、用代币交换指定的 ETH 币
-    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to)
         external
         returns (uint[] memory amounts);
     // 5、用指定的代币交换 ETH 币   
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
+    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to )
         external
         returns (uint[] memory amounts);
     // 6、用 ETH 币交换指定的代币 
-    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
+    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to )
         external
         payable
         returns (uint[] memory amounts);
@@ -289,8 +287,7 @@ interface uniSwap{
         uint amountBDesired,
         uint amountAMin,
         uint amountBMin,
-        address to,
-        uint deadline
+        address to
     ) external returns (uint amountA, uint amountB, uint liquidity);
     // 2、添加ETH 币流动性 
     function addLiquidityETH(
@@ -298,8 +295,7 @@ interface uniSwap{
         uint amountTokenDesired,
         uint amountTokenMin,
         uint amountETHMin,
-        address to,
-        uint deadline
+        address to
     ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
      // 3、移除流动性    
     function removeLiquidity(
@@ -308,8 +304,7 @@ interface uniSwap{
         uint liquidity,
         uint amountAMin,
         uint amountBMin,
-        address to,
-        uint deadline
+        address to
     ) external returns (uint amountA, uint amountB);
     // 4、移除 ETH 币流动性 
     function removeLiquidityETH(
@@ -317,30 +312,9 @@ interface uniSwap{
         uint liquidity,
         uint amountTokenMin,
         uint amountETHMin,
-        address to,
-        uint deadline
+        address to
     ) external returns (uint amountToken, uint amountETH);
     // 5、凭许可证消除流动性
-    function removeLiquidityWithPermit(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountA, uint amountB);
-    // 6、凭许可证消除ETH流动性
-    function removeLiquidityETHWithPermit(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountToken, uint amountETH);
 }
 
 contract MyUni {
@@ -359,11 +333,10 @@ contract MyUni {
         uint amountIn,
         uint amountOutMin,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to
     ) external {
         TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline);
+        uniSwap(uniRoter).swapExactTokensForTokens(amountIn, amountOutMin, path, to);
     }
     
     // 2、用代币交唤指定的代币 
@@ -371,35 +344,32 @@ contract MyUni {
         uint amountOut,
         uint amountInMax,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to
     ) external {
 
             TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-            uniSwap(uniRoter).swapTokensForExactTokens(amountOut,amountInMax,path,to,deadline);
+            uniSwap(uniRoter).swapTokensForExactTokens(amountOut,amountInMax,path,to);
         }
     
     // 3、用指定的 ETH 币交唤代币 
     function swapExactETHForTokens(
         uint amountOutMin,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to
     ) external payable {
         TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).swapExactETHForTokens(amountOutMin,path,to,deadline);
+        uniSwap(uniRoter).swapExactETHForTokens(amountOutMin,path,to);
     }
    
-    // 4、用代币交换指定的 ETH 币 10.145
+    // 4、用代币交换指定的 ETH 币
      function swapTokensForExactETH(
          uint amountOut,
          uint amountInMax,
          address[] calldata path,
-         address to,
-         uint deadline
+         address to
     ) external {
         TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).swapTokensForExactETH(amountOut,amountInMax,path,to,deadline);
+        uniSwap(uniRoter).swapTokensForExactETH(amountOut,amountInMax,path,to);
     }
     
     // 5、用指定的代币交换 ETH 币   
@@ -407,11 +377,10 @@ contract MyUni {
         uint amountIn,
         uint amountOutMin,
         address[] calldata path,
-        address to,
-        uint deadline
+        address to
     ) external {
         TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).swapExactTokensForETH(amountIn,amountOutMin,path,to,deadline);
+        uniSwap(uniRoter).swapExactTokensForETH(amountIn,amountOutMin,path,to);
     }
     
     // 6、用 ETH 币交换指定的代币 
@@ -419,11 +388,10 @@ contract MyUni {
         uint amountOut,
         address[] calldata path,
         address to,
-        uint deadline,
         uint v
     ) external payable {
         TransferHelper.safeApprove(path[0],0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).swapETHForExactTokens {value:v} (amountOut,path,to,deadline);
+        uniSwap(uniRoter).swapETHForExactTokens {value:v} (amountOut,path,to);
     }
     
     // 1、添加流动性  
@@ -434,13 +402,12 @@ contract MyUni {
         uint amountBDesired,
         uint amountAMin,
         uint amountBMin,
-        address to,
-        uint deadline
+        address to  
     ) external {
         //授权需要提供流动性的两个币
         TransferHelper.safeApprove(tokenA,0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,uint(-1));
         TransferHelper.safeApprove(tokenB,0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,uint(-1));
-        uniSwap(uniRoter).addLiquidity(tokenA,tokenB,amountADesired,amountBDesired,amountAMin,amountBMin,to,deadline);
+        uniSwap(uniRoter).addLiquidity(tokenA,tokenB,amountADesired,amountBDesired,amountAMin,amountBMin,to);
     }
     
     // 2、添加ETH 币流动性 
@@ -449,12 +416,11 @@ contract MyUni {
         uint amountTokenDesired,
         uint amountTokenMin,
         uint amountETHMin,
-        address to,
-        uint deadline
+        address to
     ) external payable {
         TransferHelper.safeApprove(token,0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
         TransferHelper.safeApprove(to,0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,100000000000000000);
-        uniSwap(uniRoter).addLiquidityETH(token,amountTokenDesired,amountTokenMin,amountETHMin,to,deadline);
+        uniSwap(uniRoter).addLiquidityETH(token,amountTokenDesired,amountTokenMin,amountETHMin,to);
     }
     // 3、移除流动性    
     function removeLiquidity(
@@ -463,10 +429,9 @@ contract MyUni {
         uint liquidity,
         uint amountAMin,
         uint amountBMin,
-        address to,
-        uint deadline
+        address to
     ) external {
-        uniSwap(uniRoter).removeLiquidity(tokenA,tokenB,liquidity,amountAMin,amountBMin,to,deadline);
+        uniSwap(uniRoter).removeLiquidity(tokenA,tokenB,liquidity,amountAMin,amountBMin,to);
     }
     
      // 4、移除 ETH 币流动性 
@@ -475,35 +440,9 @@ contract MyUni {
         uint liquidity,
         uint amountTokenMin,
         uint amountETHMin,
-        address to,
-        uint deadline
+        address to 
     ) external {
-        uniSwap(uniRoter).removeLiquidityETH(token,liquidity,amountTokenMin,amountETHMin,to,deadline);
-    }
-    // 5、凭许可证消除流动性
-    function removeLiquidityWithPermit(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external {
-        uniSwap(uniRoter).removeLiquidityWithPermit(tokenA,tokenB,liquidity,amountAMin,amountBMin,to,deadline,approveMax,v,r,s);
-    }
-    // 6、凭许可证消除ETH流动性
-    function removeLiquidityETHWithPermit(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external {
-        uniSwap(uniRoter).removeLiquidityETHWithPermit(token,liquidity,amountTokenMin,amountETHMin,to,deadline,approveMax,v,r,s);
+        uniSwap(uniRoter).removeLiquidityETH(token,liquidity,amountTokenMin,amountETHMin,to);
     }
 }
 
