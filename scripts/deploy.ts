@@ -2,10 +2,10 @@ import { ethers } from "hardhat";
 
 async function main() {
   const T1 = await ethers.getContractFactory("FT");
-  const t1 = await T1.deploy("wml","wsl");
+  const t1 = await T1.deploy("sam","SAM");
 
   const T2 = await ethers.getContractFactory("FT");
-  const t2 = await T2.deploy("lmw","lsw");
+  const t2 = await T2.deploy("syz","SYZ");
   
 
   const zzzz = await ethers.getContractFactory("Exchange");
