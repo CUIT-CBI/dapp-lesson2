@@ -62,7 +62,7 @@ function remove(uint liquidity) public {
     reserveB = reserveB - amountB;
 }
 
-//Swap功能，滑点实现，调用getAmountOut方法
+//Swap功能，滑点实现，调用get方法
 function swap(uint amountIn, uint minAmountOut, address fromToken, address toToken, address to) public {
     require(amountIn > 0 && minAmountOut > 0);
     require(fromToken == tokenA || fromToken == tokenB);
