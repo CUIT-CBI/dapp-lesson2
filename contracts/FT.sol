@@ -16,6 +16,7 @@ contract FT is ERC20, Pausable, Ownable {
         _burn(msg.sender, amount);
     }
 
+
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
