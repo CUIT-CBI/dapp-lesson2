@@ -101,23 +101,40 @@ contract TokenSwap is LPToken {
     }
 
     // 有滑点限制的 Swap，如果想设置千分之五的滑点，slippageLimit 就填 5
-    function SwapWithSlippageLimit(address token, uint amountIn, uint8 slippageLimit) external returns (uint slippage) {
+    // function SwapWithSlippageLimit(address token, uint amountIn, uint8 slippageLimit) external returns (uint slippage) {
+    //     require(token == tokenA || token == tokenB, "Invalid token address");
+    //     (uint _reserveA, uint _reserveB) = _getReserve();   // 节约 gas
+    //     uint actualAmountOut;
+    //     uint expectAmountOut;
+
+    //     if(token == tokenA) {
+    //         actualAmountOut = _SwapByTokenA(amountIn);
+    //         expectAmountOut = _reserveB * amountIn / _reserveA;
+    //     } else {
+    //         actualAmountOut = _SwapByTokenB(amountIn);
+    //         expectAmountOut = _reserveA * amountIn / _reserveB;
+    //     }
+    //     slippage = (expectAmountOut - actualAmountOut) * 1000 / expectAmountOut;    // 不支持小数，所以放大 1000 倍
+    //     require(slippage <= slippageLimit, "Slippage limit not met");
+
+    //     _update();        
+    // }
+    
+    // 计算交易滑点
+    function calculateSlippage(address token, uint amountIn) external view returns (uint slippage) {
         require(token == tokenA || token == tokenB, "Invalid token address");
         (uint _reserveA, uint _reserveB) = _getReserve();   // 节约 gas
         uint actualAmountOut;
         uint expectAmountOut;
 
         if(token == tokenA) {
-            actualAmountOut = _SwapByTokenA(amountIn);
+            actualAmountOut = (_reserveB - (_reserveA * _reserveB) / (_reserveA + amountIn))  * 997 / 1000;   // 千分之三手续费
             expectAmountOut = _reserveB * amountIn / _reserveA;
         } else {
-            actualAmountOut = _SwapByTokenB(amountIn);
+            actualAmountOut = (_reserveA - (_reserveA * _reserveB) / (_reserveB + amountIn)) * 997 / 1000;   // 千分之三手续费
             expectAmountOut = _reserveA * amountIn / _reserveB;
         }
         slippage = (expectAmountOut - actualAmountOut) * 1000 / expectAmountOut;    // 不支持小数，所以放大 1000 倍
-        require(slippage <= slippageLimit, "Slippage limit not met");
-
-        _update();        
     }
 
     // 更新 reserve
