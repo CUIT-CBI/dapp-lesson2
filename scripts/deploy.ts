@@ -3,10 +3,29 @@ import { ethers } from "hardhat";
 
 async function main() {
   const FT = await ethers.getContractFactory("FT");
-  const ft = await FT.deploy("CBI", "CUIT");
+  const tokenA = await FT.deploy("TokenA", "TA");
+  await tokenA.deployed();
+  const addressA = tokenA.address;
 
-  await ft.deployed();
-  console.log(`FT deployed to ${ft.address}`);
+  const tokenB = await FT.deploy("TokenB", "TB");
+  await tokenB.deployed();
+  const addressB = tokenB.address;
+
+  const rewardToken = await FT.deploy("RewardToken", "RT");
+  await rewardToken.deployed();
+  const addressRT = rewardToken.address;
+
+  const tokenExchange = await ethers.getContractFactory("TokenExchange");
+  const te = await tokenExchange.deploy(addressA, addressB);
+  await te.deployed();
+  const addressTE = te.address;
+
+  const stakingPool = await ethers.getContractFactory("StakingPool");
+  const staking = await stakingPool.deploy(addressTE, addressRT);
+  await staking.deployed();
+
+  console.log("deployed finish");
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
