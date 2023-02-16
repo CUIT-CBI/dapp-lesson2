@@ -2,6 +2,19 @@ import '@nomiclabs/hardhat-ethers';
 import { ethers } from "hardhat";
 let deployer
 async function main() {
+  const FT = await ethers.getContractFactory("FT");
+  const tokenA = await FT.deploy("YZW", "Y");
+  await tokenA.deployed();
+  const tokenB = await FT.deploy("YZW", "Z");
+  await tokenB.deployed();
+
+  const swap = await ethers.getContractFactory("swap");
+  const swaped = await swap.deploy(tokenA.address, tokenB.address);
+  await swaped.deployed();
+
+  console.log(`FT deployed to ${tokenA.address}`);
+  console.log(`FT deployed to ${tokenB.address}`);
+
   [deployer] = await ethers.getSigners();
   const provider = await ethers.providers.getDefaultProvider();
   const WETHContract = await ethers.getContractFactory("WETH");
@@ -30,8 +43,6 @@ async function main() {
               "Factory's address : ", factory.address, "\n"+
               "Router's address : ", router.address, "\n" +
               "staker's address : ", staker.address);
-
-  //有关滑点的计算可以写一个js，类似于uniswap-sdk Trader的实现，时间关系就不做此算法了。
 }
 
 // We recommend this pattern to be able to use async/await everywhere
