@@ -3,7 +3,8 @@ import { ethers } from "hardhat";
 
 async function main() {
   const FT = await ethers.getContractFactory("FT");
-  const ft = await FT.deploy("CBI", "CUIT");
+  const ft = await FT.deploy("ZTY", "CUIT");
+  
 
   await ft.deployed();
   console.log(`FT deployed to ${ft.address}`);
