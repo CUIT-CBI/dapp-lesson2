@@ -1,6 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-06-05
-*/
 // SPDX-License-Identifier: MIT
 // 0x6522F1605Db9783F4Dff1D16616783F43DBe8af9
 pragma solidity >=0.6.6;
