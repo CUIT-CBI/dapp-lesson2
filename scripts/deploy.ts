@@ -7,7 +7,7 @@ async function main() {
   const ft = await FT.deploy("CBI", "CUIT");
   [deployer] = await ethers.getSigners();
   const token1 = await FT.deploy("CBI", "CUIT");
-  const token2 = await FT.deploy("ZXJ", "ZXJ");
+  const token2 = await FT.deploy("CYY", "CYY");
   const Factory = await ethers.getContractFactory("tokenFactory");
   const factory = await Factory.deploy();
 
@@ -26,10 +26,3 @@ async function main() {
               "token2's address : ", token2.address, "\n" +
               "Factory's address : ", factory.address);
 }
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
