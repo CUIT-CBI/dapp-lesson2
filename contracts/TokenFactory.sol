@@ -1,10 +1,9 @@
-// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 import "./FT.sol";
-import "./CoinPair.sol";
+import "./TokenPair.sol";
 
 contract coinFactory {
-    FT public rewardToken = new FT("RewardToken", "RT");
+    FT public rewardToken = new FT("RewardToken", "FT");
     mapping(address => mapping(address => tokenPair)) public pairs;
 
     function creatTransaction(
@@ -16,10 +15,7 @@ contract coinFactory {
         require(
             FT(coinA).transferFrom(msg.sender, address(this), amount1In) && FT(coinB).transferFrom(msg.sender, address(this), amount2In)
         );
-        require(
-            address(pairs[coinA][coinB]) == address(0),
-            "pair has already exists"
-        );
+        require(address(pairs[coinA][coinB]) == address(0), "Token pair has already existed");
         tokenPair pair = new tokenPair(
             coinA,
             coinB,
@@ -27,7 +23,7 @@ contract coinFactory {
             amount2In,
             rewardToken
         );
-        
+
         FT(coinA).transfer(address(pair), amount1In);
         FT(coinB).transfer(address(pair), amount2In);
         pairs[coinA][coinB] = pair;
